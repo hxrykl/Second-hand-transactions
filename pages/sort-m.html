@@ -1,0 +1,93 @@
+<style></style>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script></script>
+
+<div class="sort-m">
+	<form action="javascript:void(0)">
+        <input class="" type="search" placeholder="Search" aria-label="Search">
+        <button type="button" class="btn btn-primary">搜索</button>
+        <!-- 添加按钮 -->
+        <button type="button" class="btn btn-primary offset-4" data-toggle="modal" data-target="#exampleModal" id="j-add-btn1">添加</button>
+        <button type="button" class="btn btn-primary mx-5">批量添加</button>
+        <button type="button" class="btn btn-primary my-3">批量删除</button>
+        <!-- 添加/修改按钮Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <!-- 添加/修改按钮模态框头部 -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">添加/修改</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <!-- 模态框内容-表单内容 -->
+                    <div class="modal-body">
+                        <form action="">
+                        	<!-- id -->
+                            <input type="hidden" id="id" />
+                            <div class="form-row">
+                            	<!-- name -->
+                                <div class="form-group col-md-6">
+                                    <label for="inputEmail4">名字</label>
+                                    <input type="text" class="form-control" id="inp-name" placeholder="产品名">
+                                </div>
+                                <!-- num -->
+                                <div class="form-group col-md-3">
+                                    <label for="inputPassword4">编号</label>
+                                    <input type="text" class="form-control" id="inp-price" placeholder="产品价格">
+                                </div>
+                                <!-- parentId -->
+                                <div class="form-group col-md-3">
+                                    <label for="inputState">分类</label>
+                                    <select required="required" id="inp-sort" class="form-control">
+                                        <option>产品分类</option>
+                                        <!-- 只能是数字类型 -->
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- 模态框底部-取消按钮、添加按钮 -->
+                    <div class="modal-footer" id="j-add-btn">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+	<table class="table" id="j-product-tab">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">选择</th>
+                <th scope="col">名字</th>
+                <th scope="col">编号</th>
+                <th scope="col">类别</th>
+                <th scope="col">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+	
+	<nav aria-label="...">
+        <ul class="pagination">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>

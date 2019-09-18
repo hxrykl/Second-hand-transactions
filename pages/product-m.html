@@ -1,0 +1,280 @@
+<style>
+</style>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    //根地址
+    var baseUrl = "http://134.175.154.93:6677";
+    //初始化数据
+    function initData(){
+        //查找全部产品的地址
+        var url = "/product/findAllProduct";
+        //获取数据
+        $.get(baseUrl+url,function(response){
+            console.log(response);
+            //清空子元素
+            $("#j-product-tab > tbody").empty();
+            //遍历获取到的数据
+            response.data.forEach(function(item){
+                //定义每一列数据
+                var newTr = $(`<tr>
+                <td><input type="checkbox" value="`+item.id+`"></td>
+                <td class="namea">`+item.name+`</td>
+                <td>`+item.description+`</td>
+                <td>`+item.price+`</td>
+                <td>`+item.status+`</td>
+                <td>`+item.photo+`</td>
+                <td>`+item.categoryId+`</td>
+                <td>
+                    <a class="btn_del" href="javascript:void(0)">删除</a>
+                    <a class="btn_upd" href="javascript:void(0)"data-toggle="modal" data-target="#exampleModal">修改</a>
+                </td>
+            </tr>`);
+                //添加数据进表格里
+                $("#j-product-tab > tbody").append(newTr);
+            });
+        });
+    }
+  //重置添加模态框内容
+    $("button#j-add-btn1").click(function() {
+        //id
+        var id = $('input#id').val('');
+        console.log('id1',id);
+        //产品名
+        var inpname = $( "input#inp-name" ).val('');
+        //产品价格
+        var inpprice = $('input#inp-price').val('');
+        //产品状态
+        var inptype = $('input#inp-type').val('');
+        //产品分类
+        var inpsort = $('select#inp-sort option:checked').val('');
+        //产品图
+        var addphoto = $('input#add-photo').val('');
+        //产品描述
+        var inpdescribe = $('input#inp-describe').val('');
+    });
+  //添加或修改方法
+    var addupd = function(){
+          //从模态框内容获取有效值
+            //id
+            var id = $('input#id').val();
+            console.log("id2",id);
+            //产品名
+            var inpname = $( "input#inp-name" ).val();
+            //产品价格
+            var inpprice = $('input#inp-price').val();
+            //产品状态
+            var inptype = $('input#inp-type').val();
+            //产品分类
+            var inpsort = $('select#inp-sort option:checked').val();
+            //产品图
+            var addphoto = $('input#add-photo').val();
+            //产品描述
+            var inpdescribe = $('input#inp-describe').val();
+
+            //地址
+            var url;
+            //数据
+            var data;
+            //判定添加还是修改
+            if(id){
+                data="id="+id+"&name="+inpname+"&price="+inpprice+"&categoryId="+inpsort+"&status="+inptype+"&description="+inpdescribe+"&photo="+addphoto;
+                url=baseUrl+"/product/updateProduct";
+                alert(3);
+            }else{
+                data="name="+inpname+"&price="+inpprice+"&categoryId="+inpsort+"&status="+inptype+"&description="+inpdescribe+"&photo="+addphoto;
+                url = baseUrl+"/product/insertProduct";
+                alert(4);
+            }
+            //提交添加/修改产品信息
+            $.post(url,data,function(data,response){
+                if(id){
+                    //修改回馈
+                    console.log("data",data);
+                    alert(data.message);
+                }else{
+                    //添加回馈
+                    console.log(data);
+                    alert(data.message);
+                }
+                initData();
+            });
+        }
+  //删除方法和修改绑定信息导入模态框事件
+    var delupd = function(){
+      //删除当前行操作
+        if(this.className == "btn_del"){
+            //找到当前行的id
+            var id = $(this).parents("tr").find("input").attr('value');
+            
+            var url = baseUrl+"/product/deleteProductById";
+            var data = "id="+id;
+            //提交删除信息，并返回信息
+            $.post(url,data,function(response){
+                alert(response.message);
+                initData();
+            });
+        }else 
+      //修改按钮获取当前行数据放入修改模态框
+        if(this.className == "btn_upd"){
+          //获取点击修改行的信息
+            //找到当前行id
+            var gid = $(this).parents("tr").find("input").attr('value');
+            //获取当前行产品名
+            var gname = $(this).parents('tr').children("td:nth-child(2)").text();
+            //获取当前行产品描述
+            var gdescription = $(this).parents('tr').children("td:nth-child(3)").text();
+            //获取当前行产品价格
+            var gprice = $(this).parents('tr').children("td:nth-child(4)").text();
+            //获取当前行产品状态
+            var gstatus = $(this).parents('tr').children("td:nth-child(5)").text();
+            //获取当前行产品图片
+            var gphoto = $(this).parents('tr').children("td:nth-child(6)").text();
+            //获取当前行产品类别
+            var gcategoryId = $(this).parents('tr').children("td:nth-child(7)").text();
+
+          //将获取到的信息写入添加模态框
+            //写入id
+            $("input#id").val(gid);
+            //写入产品名
+            $( "input#inp-name" ).val(gname);
+            //写入产品价格
+            $('input#inp-price').val(gprice);
+            //写入产品状态
+            $('input#inp-type').val(gstatus);
+            //写入产品分类
+            $('select#inp-sort option:checked').val(gcategoryId);
+            //写入产品图
+            $('input#add-photo').val(gphoto);
+            //写入产品描述
+            $('input#inp-describe').val(gdescription);
+        }
+    }
+  //页面结构加载完后加载
+    $(function(){
+        //初始化加载
+        initData();
+        //为删除/修改按钮绑定事件
+        $("#j-product-tab > tbody").on("click","a",delupd);
+
+      //添加产品
+        //为模态框里的确认按钮绑定提交信息事件
+       $('#j-add-btn').on("click","button:last-child",addupd);//函数加括号会自行运行
+    });
+
+    
+</script>
+<div class="product-m">
+  <!-- 事件按钮及模态框 -->
+    <form action="javascript:void(0)">
+        <!-- 搜索框 -->
+        <input class="" type="search" placeholder="Search" aria-label="Search">
+        <!-- 搜索按钮 -->
+        <button type="button" class="btn btn-primary">搜索</button>
+        <!-- 添加按钮 -->
+        <button type="button" class="btn btn-primary offset-4" data-toggle="modal" data-target="#exampleModal" id="j-add-btn1">添加</button>
+        <!-- 批量添加按钮 -->
+        <button type="button" class="btn btn-primary mx-5">批量添加</button>
+        <!-- 批量删除按钮 -->
+        <button type="button" class="btn btn-primary my-3">批量删除</button>
+        <!-- 添加/修改按钮绑定的模态框 -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <!-- 模态框中框 -->
+            <div class="modal-dialog" role="document">
+                <!-- 模态框小框 -->
+                <div class="modal-content">
+                    <!-- 添加/修改按钮模态框头部 -->
+                    <div class="modal-header">
+                        <!-- 模态框标题 -->
+                        <h5 class="modal-title" id="exampleModalLabel">添加/修改产品</h5>
+                        <!-- 模态框关闭按钮 -->
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <!-- 模态框内容-表单内容 -->
+                    <div class="modal-body">
+                        <form action="">
+                            <!-- id -->
+                            <input type="hidden" id="id" />
+                            <div class="form-row">
+                                <!-- name产品名 -->
+                                <div class="form-group col-md-7">
+                                    <label for="inputEmail4">产品</label>
+                                    <input type="text" class="form-control" id="inp-name" placeholder="产品名">
+                                </div>
+                                <!-- price产品价格 -->
+                                <div class="form-group col-md-4">
+                                    <label for="inputPassword4">价格</label>
+                                    <input type="text" class="form-control" id="inp-price" placeholder="产品价格">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+                                    <label for="inputAddress">状态</label>
+                                    <input type="text" class="form-control" id="inp-type" placeholder="产品状态">
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="inputState">分类</label>
+                                    <select required="required" id="inp-sort" class="form-control">
+                                        <option>产品分类</option>
+                                        <!-- 只能是数字类型 -->
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputCity">图片</label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="add-photo" required>
+                                        <label class="custom-file-label" for="validatedCustomFile">添加图片</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputAddress2">描述</label>
+                                <input type="text" class="form-control" id="inp-describe" placeholder="产品概述">
+                            </div>
+                        </form>
+                    </div>
+                    <!-- 模态框底部-取消按钮、添加按钮 -->
+                    <div class="modal-footer" id="j-add-btn">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <table class="table" id="j-product-tab">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">选择</th>
+                <th scope="col">产品名</th>
+                <th scope="col">产品描述</th>
+                <th scope="col">产品价格</th>
+                <th scope="col">产品状态</th>
+                <th scope="col">产品图</th>
+                <th scope="col">产品类别</th>
+                <th scope="col">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <nav aria-label="...">
+        <ul class="pagination">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
