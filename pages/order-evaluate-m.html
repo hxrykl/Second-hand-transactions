@@ -1,0 +1,236 @@
+<style></style>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script>
+	//初始化数据
+    var refreshData = function(){
+        //清理表格原先的数据
+        $('#j-oEvaluata-tab > tbody').empty();
+        //定义地址
+        var oeUrl = baseUrl2+"/comment/findAll";
+        //获取全部评价信息
+        $.get(oeUrl,function(response){
+            //遍历获取到的数据
+            response.data.forEach(function(item){
+                //定义每一行
+                var newTr = $(`
+                    <tr>
+                        <td><input type="checkbox" value="`+item.id+`"></td>
+                        <td class="namea">`+item.content+`</td>
+                        <td>`+item.commentTime+`</td>
+                        <td>`+item.ordertId+`</td>
+                        <td>
+                            <a class="btn_del" href="javascript:void(0)">删除</a>
+                            <a class="btn_upd" href="javascript:void(0)"data-toggle="modal" data-target="#exampleModal">修改</a>
+                        </td>
+                    </tr>
+                `);
+                //将数据放入表体中
+                $('#j-oEvaluata-tab > tbody').append(newTr);
+            });
+        });
+    }
+
+    //添加/修改信息的方法
+    var oeAddUpd = function(){
+        //获取模态框里文本框的信息
+        //获取id
+        var oeId = $('input#id').val();
+        //获取内容
+        var oeContent = $('input#inp-content').val();
+        //获取评论时间
+        var oeTime = $('input#inp-time').val();
+        //获取订单id
+        var oeOrder = $('input#inp-order').val();
+        console.log(oeId,"/",oeContent,"/",oeTime,"/",oeOrder);
+        //声明地址/数据
+        var oeUrl,oeDate;
+        //打包添加或修改接口地址
+        oeUrl = baseUrl2+"/comment/saveOrUpdate";
+        //判定添加还是修改打包数据
+        if(oeId){
+            oeDate = "id="+oeId+"&content="+oeContent+"&commentTime="+oeTime+"&ordertId="+oeOrder;
+        }else{
+            oeDate = "content="+oeContent+"&commentTime="+oeTime+"&ordertId="+oeOrder;
+        }
+        //提交信息
+        $.post(oeUrl,oeDate,function(response){
+            if(oeId){
+                console.log(response);
+                alert(response.message);
+
+            }else{
+                console.log(response);
+                alert(response.message);
+            }
+            //操作结束刷新数据
+            refreshData();
+        });
+    }
+
+    //删除行/将当前行数据写入模态框里的文本框方法
+    var oeDelUpd = function(){
+        //判断点击那个按钮
+        //如果点击删除按钮，则删除当前行
+        if(this.className == 'btn_del'){
+            //获取当前行id
+            var oeId = $(this).parents('tr').find('input').attr('value');
+            //定义删除接口地址
+
+            var oeUrl = baseUrl2+"/comment/deleteById";
+            //打包id数据
+            var oeDate = "id="+oeId;
+             console.log('id',oeDate);
+            //提交信息，删除数据
+            $.post(oeUrl,oeDate,function(response){
+                //回馈删除操作信息
+                alert(response.message);
+                //操作完成刷新数据
+                refreshData();
+            });
+
+        }else
+        //若点击修改按钮，则将行数据写入模态框里的文本框
+        if(this.className == 'btn_upd'){
+            //获取当前行全部信息
+            //获取当前行id
+            var oeId = $(this).parents('tr').find('input').attr('value');
+            //获取当前行内容
+            var oeContent = $(this).parents('tr').children('td:nth-child(2)').text();
+            //获取评论时间
+            var oeTime = $(this).parents('tr').children('td:nth-child(3)').text();
+            //获取订单id
+            var oeOrder = $(this).parents('tr').children('td:nth-child(4)').text();
+
+            //将获取到的数据写入文本框
+            //写入id
+            $('input#id').val(oeId);
+            //写入内容
+            $('input#inp-content').val(oeContent);
+            //写入评论时间
+            $('input#inp-time').val(oeTime);
+            //写入订单id
+            $('input#inp-order').val(oeOrder);
+        }
+    }
+    //添加信息前清空文本框的数据
+    $('#j-add-btn1').click(function(){
+            //清空id
+            $('input#id').val('');
+            //清空内容
+            $('input#inp-content').val('');
+            //清空评论时间
+            $('input#inp-time').val('');
+            //清空订单id
+            $('input#inp-order').val('');
+    });
+
+    //页面结构加载完后自行加载
+    $(function(){
+        //初始化数据
+        refreshData();
+        //为模态框里的确认按钮绑定事件
+        $('div#j-add-btn').on('click','button:last-child',oeAddUpd);
+        //为每一行的删除或修改按钮=绑定事件
+        $('#j-oEvaluata-tab > tbody').on('click','a',oeDelUpd);
+    });
+</script>
+
+<div class="sort-m">
+	<form action="javascript:void(0)">
+		<!-- 搜索 -->
+        <div class="btn s-search">
+            <i class="fa fa-search"></i>
+            <!-- 搜索框 -->
+            <input class="" type="search" placeholder="Search" aria-label="Search">
+            <!-- 搜索按钮 -->
+            <button type="button" class="btn btn-primary">搜索</button>
+        </div>
+        <!-- 添加按钮 -->
+        <button type="button" class="btn btn-primary offset-4" data-toggle="modal" data-target="#exampleModal" id="j-add-btn1">添加</button>
+        <!-- 批量添加按钮 -->
+        <button type="button" class="btn btn-primary mx-5">批量添加</button>
+        <!-- 批量删除按钮 -->
+        <button type="button" class="btn btn-primary my-3">批量删除</button>
+        <!-- 添加/修改按钮绑定的模态框 -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        	<!-- 模态框中框 -->
+            <div class="modal-dialog" role="document">
+            	<!-- 模态框小框 -->
+                <div class="modal-content">
+                    <!-- 添加/修改按钮模态框头部 -->
+                    <div class="modal-header">
+                    	<!-- 模态框标题 -->
+                        <h5 class="modal-title" id="exampleModalLabel">添加/修改</h5>
+                        <!-- 模态框关闭按钮 -->
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <!-- 模态框内容-表单内容 -->
+                    <div class="modal-body">
+                        <form action="">
+                        	<!-- id -->
+                            <input type="hidden" id="id" />
+                            <div class="form-row">
+                            	<!-- 内容 -->
+                                <div class="form-group col-md-6">
+                                    <label for="inputEmail4">内容</label>
+                                    <input type="text" class="form-control" id="inp-content" placeholder="内容">
+                                </div>
+                                <!-- 评论时间 -->
+                                <div class="form-group col-md-3">
+                                    <label for="inputPassword4">评论时间</label>
+                                    <input type="text" class="form-control" id="inp-time" placeholder="评论时间">
+                                </div>
+                                <!-- 订单id -->
+                                <div class="form-group col-md-3">
+                                    <label for="inputPassword4">订单id</label>
+                                    <input type="text" class="form-control" id="inp-order" placeholder="订单id">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- 模态框底部-取消按钮、添加按钮 -->
+                    <div class="modal-footer" id="j-add-btn">
+                        <!-- 取消按钮 -->
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <!-- 确认按钮 -->
+                        <button type="button" class="btn btn-primary">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- 分类信息显示表 -->
+	<table class="table" id="j-oEvaluata-tab">
+        <!-- 分类信息表头 -->
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">选择</th>
+                <th scope="col">内容</th>
+                <th scope="col">评论时间</th>
+                <th scope="col">订单</th>
+                <th scope="col">操作</th>
+            </tr>
+        </thead>
+         <!-- 分类信息表体 -->
+        <tbody>
+        </tbody>
+    </table>
+	<!-- 下一页产品信息 -->
+	<nav aria-label="...">
+        <ul class="pagination">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>

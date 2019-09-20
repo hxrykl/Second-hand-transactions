@@ -1,25 +1,26 @@
 <style></style>
 <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 <script>
-    
     //定义初始化数据方法
     function initData(){
         //包装查找全部分类信息的地址
-        var url = baseUrl+"/category/findAllCategory";
+        var url = baseUrl2+"/customer/findAll";
         //获取分类信息数据
         $.get(url,function(response){
             console.log(response);
             //清空表格子元素
-            $('#j-sort-tab > tbody').empty();
+            $('#j-customer-tab > tbody').empty();
             //遍历获取到的分类管理数据
             response.data.forEach(function(item){
                 //定义每一列数据
                 var newTr = $(
                    `<tr>
                         <td><input type="checkbox" value="`+item.id+`"></td>
-                        <td class="namea">`+item.name+`</td>
-                        <td>`+item.num+`</td>
-                        <td>`+item.parentId+`</td>
+                        <td class="namea">`+item.realname+`</td>
+                        <td>`+item.telephone+`</td>
+                        <td>`+item.password+`</td>
+                        <td>`+item.photo+`</td>
+                        <td>`+item.status+`</td>
                         <td>
                             <a class="btn_del" href="javascript:void(0)">删除</a>
                             <a class="btn_upd" href="javascript:void(0)"data-toggle="modal" data-target="#exampleModal">修改</a>
@@ -27,20 +28,24 @@
                     </tr>`
                 );
                 //将定义的数据放入表格里
-                $('#j-sort-tab > tbody').append(newTr);
+                $('#j-customer-tab > tbody').append(newTr);
             });
         });
     }
     //重置添加模态框内容
     $('button#j-add-btn1').click(function(){
         //id
-        var id = $('input#id').val('');
-        //分类名name
-        var inpname = $('input#inp-name').val('');
-        //编号num
-        var inpnum = $('input#inp-num').val('');
-        //父id parentId
-        var inpparentId = $('input#inp-parentId').val('');
+        $('input#id').val('');
+        //名字name
+        $('input#inp-realname').val('');
+        //电话
+        $('input#inp-telephone').val('');
+        //密码
+        $('input#inp-password').val('');
+        //相片
+        $('input#inp-photo').val('');
+        //状态
+        $('input#inp-status').val('');
 
     });
     //添加或修改分类信息方法
@@ -48,24 +53,27 @@
       //从模态框输入框里获取信息
         //id
         var id = $('input#id').val();
-        //分类名name
-        var inpname = $('input#inp-name').val();
-         //编号num
-        var inpnum = $('input#inp-num').val();
-        //父id parentId
-        var inpparentId = $('input#inp-parentId').val();
-        console.log(inpname,inpnum,inpparentId);
+        //名字name
+        var name = $('input#inp-realname').val();
+        //电话
+        var telephone = $('input#inp-telephone').val();
+        //密码
+        var password = $('input#inp-password').val();
+        //相片
+        var photo = $('input#inp-photo').val();
+        //状态
+        var status = $('input#inp-status').val();
+        console.log(name,password);
         //地址
-        var url;
+        var url = baseUrl2+"/customer/saveOrUpdate";
         //数据
         var data;
         //判定添加还是修改
         if(id){
-            data = "id="+id+"&name="+inpname+"&num="+inpnum+"&parentId="+inpparentId;
-            url = baseUrl+"/category/updateCategory";
+            data = "id="+id+"&realname="+name+"&telephone="+telephone+"&password="+password+"&photo"+photo+"&status"+status;
+            
         }else{
-            data = "name="+inpname+"&num="+inpnum+"&parentId="+inpparentId;
-            url = baseUrl+"/category/insertCategory";
+            data = "realname="+name+"&telephone="+telephone+"&password="+password+"&photo"+photo+"&status"+status;
         }
 
         //提交添加或修改的分类信息
@@ -93,7 +101,7 @@
             //找到当前行的id
             var id = $(this).parents('tr').find('input').attr('value');
             //取得删除地址接口
-            var url = baseUrl+"/category/deleteByCategoryId";
+            var url = baseUrl2+"/customer/deleteById";
             //打包找到的id
             var data = "id="+id;
             //console.log(data);
@@ -111,23 +119,31 @@
         if(this.className == 'btn_upd'){
           //获取当前行的全部数据
             //获取到id
-            var sortId = $(this).parents('tr').find('input').attr('value');
-            //获取到类名
-            var sortName = $(this).parents('tr').children('td:nth-child(2)').text();
-            //获取到编号
-            var sortNum = $(this).parents('tr').children('td:nth-child(3)').text();
-            //获取到父id
-            var sortParentId = $(this).parents('tr').children('td:nth-child(4)').text();
+            var id = $(this).parents('tr').find('input').attr('value');
+            //获取名字
+            var name = $(this).parents('tr').children('td:nth-child(2)').text();
+            //获取到电话
+            var telephone = $(this).parents('tr').children('td:nth-child(3)').text();
+            //获取到密码
+            var password = $(this).parents('tr').children('td:nth-child(4)').text();
+            //获取到相片
+            var photo = $(this).parents('tr').children('td:nth-child(5)').text();
+            //获取到状态
+            var status = $(this).parents('tr').children('td:nth-child(6)').text();
 
           //将获取到的数据写入修改模态框的文本框里
-            //写入id
-            $('input#id').val(sortId);
-            //写入类名
-            $('input#inp-name').val(sortName);
-            //写入编号
-            $('input#inp-num').val(sortNum);
-            //写入父id
-            $('input#inp-parentId').val(sortParentId);
+            //id
+            $('input#id').val(id);
+            //名字name
+            $('input#inp-realname').val(name);
+            //电话
+            $('input#inp-telephone').val(telephone);
+            //密码
+            $('input#inp-password').val(password);
+            //相片
+            $('input#inp-photo').val(photo);
+            //状态
+            $('input#inp-status').val(status);
 
         }
     }
@@ -139,7 +155,7 @@
         //为模态框里的确认绑定提交添加/修改信息事件
         $('#j-add-btn').on('click','button:last-child',saddupd);
         //为删除/修改按钮绑定事件
-        $('#j-sort-tab > tbody').on('click','a',sdelupd);
+        $('#j-customer-tab > tbody').on('click','a',sdelupd);
 
     });
 </script>
@@ -180,20 +196,36 @@
                             <!-- id -->
                             <input type="hidden" id="id" />
                             <div class="form-row">
-                                <!-- 类名 -->
+                                <!-- 顾客姓名realname -->
                                 <div class="form-group col-md-6">
-                                    <label for="inputEmail4">类名</label>
-                                    <input type="text" class="form-control" id="inp-name" placeholder="类名">
+                                    <label for="inputEmail4">名字</label>
+                                    <input type="text" class="form-control" id="inp-realname" placeholder="顾客名字">
                                 </div>
-                                <!-- 编号 -->
+                                <!-- 顾客电话telephone -->
                                 <div class="form-group col-md-3">
-                                    <label for="inputPassword4">编号</label>
-                                    <input type="text" class="form-control" id="inp-num" placeholder="编号">
+                                    <label for="inputPassword4">电话</label>
+                                    <input type="text" class="form-control" id="inp-telephone" placeholder="输入电话号">
                                 </div>
-                                <!-- 父id -->
+                            </div>
+                            <div class="form-row">
+                                <!-- 顾客密码password -->
+                                <div class="form-group col-md-6">
+                                    <label for="inputEmail4">密码</label>
+                                    <input type="text" class="form-control" id="inp-password" placeholder="顾客密码">
+                                </div>
+                                <!-- 顾客相片photo -->
                                 <div class="form-group col-md-3">
-                                    <label for="inputPassword4">父id</label>
-                                    <input type="text" class="form-control" id="inp-parentId" placeholder="父id">
+                                    <label for="inputPassword4">相片</label>
+                                    <input type="text" class="form-control" id="inp-photo" placeholder="顾客相片">
+                                </div>
+                                <!-- 顾客状态status -->
+                                <div class="form-group col-md-3">
+                                    <label for="inputState">状态</label>
+                                    <select required="required" id="inp-status" class="form-control">
+                                        <option>选择状态</option>
+                                        <option>已下单</option>
+                                        <option>未下单</option>
+                                    </select>
                                 </div>
                             </div>
                         </form>
@@ -210,14 +242,23 @@
         </div>
     </form>
     <!-- 分类信息显示表 -->
-    <table class="table" id="j-sort-tab">
+    <table class="table" id="j-customer-tab">
         <!-- 分类信息表头 -->
         <thead class="thead-light">
             <tr>
+                <!-- id -->
                 <th scope="col">选择</th>
+                <!-- realname -->
                 <th scope="col">名字</th>
-                <th scope="col">编号</th>
-                <th scope="col">类别</th>
+                <!-- telephone -->
+                <th scope="col">电话</th>
+                <!-- password -->
+                <th scope="col">密码</th>
+                <!-- photo -->
+                <th scope="col">相片</th>
+                <!-- status -->
+                <th scope="col">状态</th>
+                <!-- / -->
                 <th scope="col">操作</th>
             </tr>
         </thead>

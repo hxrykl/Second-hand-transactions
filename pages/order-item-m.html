@@ -1,0 +1,232 @@
+<style></style>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script>
+	//定义初始化数据方法
+    function initData(){
+        //包装查找全部订单项信息的地址
+        var url = baseUrl+"/orderLine/findAllOrderLine";
+        //获取订单项信息数据
+        $.get(url,function(response){
+            console.log(response);
+            //清空表格子元素
+            $('#j-orderItem-tab > tbody').empty();
+            //遍历获取到的全部订单项数据
+            response.data.forEach(function(item){
+                //定义每一列数据
+                var newTr = $(`
+                    <tr>
+                        <td><input type="checkbox" value="`+item.id+`"></td>
+                        <td class="namea">`+item.number+`</td>
+                        <td>`+item.productId+`</td>
+                        <td>`+item.orderId+`</td>
+                        <td>
+                            <a class="btn_del" href="javascript:void(0)">删除</a>
+                            <a class="btn_upd" href="javascript:void(0)"data-toggle="modal" data-target="#exampleModal">修改</a>
+                        </td>
+                    </tr>
+                        `);
+                //将定义的数据放入表格里
+                $('#j-orderItem-tab > tbody').append(newTr);
+            });
+        });
+    }
+
+    //添加信息前清空添加模态框里的文本框数据
+    $('button#j-add-btn1').click(function(){
+            //清空id
+            $('input#id').val('');
+            //清空服务数量
+            $('input#inp-number').val('');
+            //清空服务
+            $('input#inp-productId').val('');
+            //清空订单号
+            $('input#inp-orderId').val('');
+    });
+    //添加或修改分类信息方法
+    var oAddUpd = function(){
+        //从模态框里的输入框获取信息
+        //获取id
+        var oiId = $('input#id').val();
+        //获取服务数量
+        var oiNumber = $('input#inp-number').val();
+        //获取服务
+        var oiProductId = $('input#inp-productId').val();
+        //获取订单号
+        var oiOrderId = $('input#inp-orderId').val();
+
+        //声明地址
+        var oiUrl;
+        //声明数据
+        var oiData;
+        //通过是否有id判定添加或修改定义地址和数据
+        if(oiId){
+            oiData = "id="+oiId+"&number="+oiNumber+"&productId="+oiProductId+"&orderId="+oiOrderId;
+            oiUrl = baseUrl+"/orderLine/updateOrderLinePrimaryKey";
+        }else{
+            oiData = "number="+oiNumber+"&productId="+oiProductId+"&orderId="+oiOrderId;
+            oiUrl = baseUrl+"/orderLine/insertOrderLine";
+        }
+        console.log("id",oiId);
+        //提交添加或修改的订单项信息
+        $.post(oiUrl,oiData,function(data){
+            //通过是否有id判定返回的是修改还是添加信息
+            if(oiId){
+                console.log("修改的data",data);
+                alert(data.message);
+            }else{
+                console.log("添加的data",data);
+                alert(data.message);
+            }
+            //添加或修改操作完成后初始化信息
+            initData();
+        });
+    }
+    //删除行信息或修改行信息的方法
+    var oDelUpd = function(){
+        //判定如果点击删除按钮则删除当前行数据
+        if(this.className == 'btn_del'){
+            //获取当前行id
+            var oiId = $(this).parents('tr').find('input').attr('value');
+            //打包获取到的id
+            var oiData = "id="+oiId;
+            //取得删除地址的接口
+            var oiUrl = baseUrl+"/orderLine/deleteOrderLineById";
+            //提交删除当前行的id，进行删除操作
+            $.post(oiUrl,oiData,function(response){
+                console.log(response);
+                //弹出删除操作后返回的信息
+                alert(response.message);
+                //操作结束初始化数据
+                initData();
+            });
+
+        }else
+        //如果点击修改按钮，则将行数据写入修改模态框的文本框里
+        if(this.className == 'btn_upd'){
+            //获取当前行全部数据
+            //获取id
+            var oiId = $(this).parents('tr').find('input').attr('value');
+            //获取服务数量
+            var oiNumber = $(this).parents('tr').children('td:nth-child(2)').text();
+            //获取服务
+            var oiProductId = $(this).parents('tr').children('td:nth-child(3)').text();
+            //获取订单号
+            var oiOrderId = $(this).parents('tr').children('td:nth-child(4)').text();
+            //将获取到的数据写入修改模态框的文本框
+            //写入id
+            $('input#id').val(oiId);
+            //写入服务数量
+            $('input#inp-number').val(oiNumber);
+            //写入服务
+            $('input#inp-productId').val(oiProductId);
+            //写入订单号
+            $('input#inp-orderId').val(oiOrderId);
+
+        }
+    }
+    //页面结构加载完后加载
+    $(function(){
+        //初始化数据
+        initData();
+        //为模态框里的确认按钮绑定提交添加/修改信息事件
+        $('#j-add-btn').on('click','button:last-child',oAddUpd);
+        //为表格每一行的删除/修改按钮绑定事件
+        $('#j-orderItem-tab > tbody').on('click','a',oDelUpd)
+    });
+</script>
+
+<div class="sort-m">
+	<form action="javascript:void(0)">
+		<!-- 搜索 -->
+        <div class="btn s-search">
+            <i class="fa fa-search"></i>
+            <!-- 搜索框 -->
+            <input class="" type="search" placeholder="Search" aria-label="Search">
+            <!-- 搜索按钮 -->
+            <button type="button" class="btn btn-primary">搜索</button>
+        </div>
+        <!-- 添加按钮 -->
+        <button type="button" class="btn btn-primary offset-4" data-toggle="modal" data-target="#exampleModal" id="j-add-btn1">添加</button>
+        <!-- 批量添加按钮 -->
+        <button type="button" class="btn btn-primary mx-5">批量添加</button>
+        <!-- 批量删除按钮 -->
+        <button type="button" class="btn btn-primary my-3">批量删除</button>
+        <!-- 添加/修改按钮绑定的模态框 -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        	<!-- 模态框中框 -->
+            <div class="modal-dialog" role="document">
+            	<!-- 模态框小框 -->
+                <div class="modal-content">
+                    <!-- 添加/修改按钮模态框头部 -->
+                    <div class="modal-header">
+                    	<!-- 模态框标题 -->
+                        <h5 class="modal-title" id="exampleModalLabel">添加/修改</h5>
+                        <!-- 模态框关闭按钮 -->
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <!-- 模态框内容-表单内容 -->
+                    <div class="modal-body">
+                        <form action="">
+                        	<!-- id -->
+                            <input type="hidden" id="id" />
+                            <div class="form-row">
+                            	<!-- 服务数量number -->
+                                <div class="form-group col-md-6">
+                                    <label for="inputEmail4">服务数量</label>
+                                    <input type="text" class="form-control" id="inp-number" placeholder="服务数量">
+                                </div>
+                                <!-- 服务productId -->
+                                <div class="form-group col-md-3">
+                                    <label for="inputPassword4">服务</label>
+                                    <input type="text" class="form-control" id="inp-productId" placeholder="服务">
+                                </div>
+                                <!-- 订单号orderId -->
+                                <div class="form-group col-md-3">
+                                    <label for="inputPassword4">订单号</label>
+                                    <input type="text" class="form-control" id="inp-orderId" placeholder="订单号">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- 模态框底部-取消按钮、添加按钮 -->
+                    <div class="modal-footer" id="j-add-btn">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+	<table class="table" id="j-orderItem-tab">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">选择</th>
+                <th scope="col">服务数量</th>
+                <th scope="col">服务</th>
+                <th scope="col">订单号</th>
+                <th scope="col">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+	<!-- 下一页产品信息 -->
+	<nav aria-label="...">
+        <ul class="pagination">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>

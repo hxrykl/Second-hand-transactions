@@ -3,7 +3,7 @@
 <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 <script>
     //根地址
-    var baseUrl = "http://134.175.154.93:6677";
+    //var baseUrl = "http://134.175.154.93:6677";
     //初始化数据
     function initData(){
         //查找全部产品的地址
@@ -79,11 +79,11 @@
             if(id){
                 data="id="+id+"&name="+inpname+"&price="+inpprice+"&categoryId="+inpsort+"&status="+inptype+"&description="+inpdescribe+"&photo="+addphoto;
                 url=baseUrl+"/product/updateProduct";
-                alert(3);
+                //alert(3);
             }else{
                 data="name="+inpname+"&price="+inpprice+"&categoryId="+inpsort+"&status="+inptype+"&description="+inpdescribe+"&photo="+addphoto;
                 url = baseUrl+"/product/insertProduct";
-                alert(4);
+                //alert(4);
             }
             //提交添加/修改产品信息
             $.post(url,data,function(data,response){
@@ -118,7 +118,7 @@
         if(this.className == "btn_upd"){
           //获取点击修改行的信息
             //找到当前行id
-            var gid = $(this).parents("tr").find("input").attr('value');
+            var gid = $(this).parents('tr').find("input").attr('value');
             //获取当前行产品名
             var gname = $(this).parents('tr').children("td:nth-child(2)").text();
             //获取当前行产品描述
@@ -164,12 +164,16 @@
     
 </script>
 <div class="product-m">
-  <!-- 事件按钮及模态框 -->
+    <!-- 事件按钮及模态框 -->
     <form action="javascript:void(0)">
-        <!-- 搜索框 -->
-        <input class="" type="search" placeholder="Search" aria-label="Search">
-        <!-- 搜索按钮 -->
-        <button type="button" class="btn btn-primary">搜索</button>
+        <!-- 搜索 -->
+        <div class="btn s-search">
+            <i class="fa fa-search"></i>
+            <!-- 搜索框 -->
+            <input class="" type="search" placeholder="Search" aria-label="Search">
+            <!-- 搜索按钮 -->
+            <button type="button" class="btn btn-primary">搜索</button>
+        </div>
         <!-- 添加按钮 -->
         <button type="button" class="btn btn-primary offset-4" data-toggle="modal" data-target="#exampleModal" id="j-add-btn1">添加</button>
         <!-- 批量添加按钮 -->
@@ -209,10 +213,12 @@
                                 </div>
                             </div>
                             <div class="form-row">
+                                <!-- status产品状态 -->
                                 <div class="form-group col-md-3">
                                     <label for="inputAddress">状态</label>
                                     <input type="text" class="form-control" id="inp-type" placeholder="产品状态">
                                 </div>
+                                <!-- categoryId产品分类 -->
                                 <div class="form-group col-md-3">
                                     <label for="inputState">分类</label>
                                     <select required="required" id="inp-sort" class="form-control">
@@ -223,6 +229,7 @@
                                         <option>3</option>
                                     </select>
                                 </div>
+                                <!-- photo产品图 -->
                                 <div class="form-group col-md-6">
                                     <label for="inputCity">图片</label>
                                     <div class="custom-file">
@@ -232,6 +239,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <!-- description产品描述 -->
                                 <label for="inputAddress2">描述</label>
                                 <input type="text" class="form-control" id="inp-describe" placeholder="产品概述">
                             </div>
@@ -246,7 +254,9 @@
             </div>
         </div>
     </form>
+    <!-- 显示产品信息表格 -->
     <table class="table" id="j-product-tab">
+        <!-- 表头 -->
         <thead class="thead-light">
             <tr>
                 <th scope="col">选择</th>
@@ -259,9 +269,11 @@
                 <th scope="col">操作</th>
             </tr>
         </thead>
+        <!-- 表体 -->
         <tbody>
         </tbody>
     </table>
+    <!-- 下一页产品信息 -->
     <nav aria-label="...">
         <ul class="pagination">
             <li class="page-item disabled">

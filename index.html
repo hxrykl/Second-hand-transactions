@@ -5,46 +5,71 @@
     <meta charset="UTF-8">
     <title>e洁家政服务</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-     <link rel="stylesheet" href="./css/index.css">
-    <!--  <link rel="stylesheet" href="./disanfang/bootstrap.css"> -->
-
+    <!-- 主页样式 -->
+    <link rel="stylesheet" href="./css/index.css">
+    <!-- 引入bootstrap样式 -->
     <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.css" rel="stylesheet">
-
+    <!-- 引入图标库font awesome样式 -->
+    <link href="https://cdn.bootcss.com/font-awesome/5.10.2/css/all.css" rel="stylesheet">
+    <!-- 引入本地jquery文件 -->
     <script src="./disanfang/jquery-3.4.1.js"></script>
+    <!-- 引入本地bootstrap.js文件 -->
     <script src="./disanfang/bootstrap.js"></script>
-	<script type="text/javascript" src="./js/index.js"></script>
-    
+    <!-- 引入自定义主页js文件 -->
+    <script type="text/javascript" src="./js/index.js"></script>
 </head>
 
 <body>
+    <!-- 铺满屏幕大框 -->
     <div class="container-fluid">
+        <!-- 伸缩盒中框 -->
         <div class="row content">
+            <!-- 左边框 -->
             <div class="s-left col-2  text-light ">
+                <!-- logo -->
                 <div class="s-logo col text-center py-3">E洁家政</div>
+                <!-- 菜单栏 -->
                 <div class="s-menu col">
-                    <div url="./pages/product-m.html" class="col">产品管理</div>
-                    <div url="./pages/sort-m.html" class="col">分类管理</div>
-                    <div url="./pages/order-item-m.html" class="col">订单项管理</div>
-                    <div url="./pages/order-m.html" class="col">订单管理</div>
-                    <div url="./pages/order-evaluate-m.html" class="col">订单评价 </div>
-                    <div class="col">顾客管理</div>
-                    <div class="col">服务员管</div>
-                    <div class="col">地址管理</div>
+                    <div url="./pages/product-m.html" class="col">
+                        <span>产品管理</span>
+                    </div>
+                    <div url="./pages/sort-m.html" class="col">
+                        <span>分类管理</span>
+                    </div>
+                    <div url="./pages/order-item-m.html" class="col">
+                        <span>订单项管理</span>
+                    </div>
+                    <div url="./pages/order-m.html" class="col">
+                        <span>订单管理</span>
+                    </div>
+                    <div url="./pages/order-evaluate-m.html" class="col">
+                        <span>订单评价</span>
+                    </div>
+                    <div url="./pages/customer-m.html" class="col">
+                        <span>顾客管理</span>
+                    </div>
+                    <div url="./pages/attendant-m.html" class="col">
+                        <span>服务员管理</span>
+                    </div>
+                    <div url="./pages/address-m.html" class="col">
+                        <span>地址管理</span> 
+                    </div>
                 </div>
             </div>
+            <!-- 右边框 -->
             <div class="col  text-dark">
+                <!-- 头部面包屑 -->
                 <div class="s-head  ">
                     <span>主页</span>
                     <span>/</span>
-                    <span>产品管理</span>
+                    <span class="j-menun">会被覆盖</span>
                 </div>
+                <!-- 将内容导入框 -->
                 <div class="s-content" id="wrapper">
-                	
                 </div>
             </div>
         </div>
     </div>
-    
 </body>
 
 </html>

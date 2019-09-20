@@ -1,0 +1,309 @@
+<style></style>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script>
+	
+     //定义初始化数据方法
+    function initData(){
+        //包装查找全部分类信息的地址
+        var url = baseUrl2+"/address/findAll ";
+        //获取分类信息数据
+        $.get(url,function(response){
+            console.log(response);
+            //清空表格子元素
+            $('#j-address-tab > tbody').empty();
+            //遍历获取到的分类管理数据
+            response.data.forEach(function(item){
+                //定义每一列数据
+                var newTr = $(
+                   `<tr>
+                        <td><input type="checkbox" value="`+item.id+`"></td>
+                        <td class="namea">`+item.province+`</td>
+                        <td>`+item.city+`</td>
+                        <td>`+item.area+`</td>
+                        <td>`+item.address+`</td>
+                        <td>`+item.telephone+`</td>
+                        <td>`+item.customerId+`</td>
+                        <td>
+                            <a class="btn_del" href="javascript:void(0)">删除</a>
+                            <a class="btn_upd" href="javascript:void(0)"data-toggle="modal" data-target="#exampleModal">修改</a>
+                        </td>
+                    </tr>`
+                );
+                //将定义的数据放入表格里
+                $('#j-address-tab > tbody').append(newTr);
+            });
+        });
+    }
+    //重置添加模态框内容
+    $('button#j-add-btn1').click(function(){
+        //id
+        $('input#id').val('');
+        //省
+        $('select#inp-province option:checked').val('');
+        //市
+        $('select#inp-city option:checked').val('');
+        //区
+        $('select#inp-area option:checked').val('');
+        //详细
+        $('input#inp-address ').val('');
+        //电话
+        $('input#inp-telephone').val('');
+        //顾客
+        $('input#inp-customer').val('');
+
+    });
+    //添加或修改分类信息方法
+    var saddupd = function(){
+      //从模态框输入框里获取信息
+        //id
+        var id = $('input#id').val();
+        //省
+        var province = $('select#inp-province option:checked').val();
+        //市
+        var city = $('select#inp-city option:checked').val();
+        //区
+        var area = $('select#inp-area option:checked').val();
+        //详细
+        var address = $('input#inp-address').val();
+        //电话
+        var telephone = $('input#inp-telephone').val();
+        //顾客
+        var customer = $('input#inp-customer').val();
+        //地址
+        var url = baseUrl2+"/address/saveOrUpdate";
+        //数据
+        var data;
+        //判定添加还是修改
+        if(id){
+            data = "id="+id+"&province="+province+"&city="+city+"&area="+area+"&address="+address+"&telephone="+telephone+"&customerId"+customer;
+        }else{
+           "province="+province+"&city="+city+"&area="+area+"&address="+address+"&telephone="+telephone+"&customerId"+customer;
+        }
+
+        //提交添加或修改的分类信息
+        $.post(url,data,function(data){
+            //修改回馈
+            if(id){
+                console.log("修改data",data);
+                alert(data.message);
+            }
+            //添加回馈
+            else{
+                console.log("添加data",data);
+                alert(data.message);
+            }
+            //修改或添加完成后重新初始化信息
+            initData();
+        });
+    }
+
+    //删除行分类信息或将行内容写入模态框里的文本框
+    var sdelupd = function(){
+        //判断如果点击删除按钮则删除当前行
+        if(this.className == 'btn_del'){
+            //找到当前行的id
+            var id = $(this).parents('tr').find('input').attr('value');
+            //取得删除地址接口
+            var url = baseUrl2+"/address/deleteById";
+            //打包找到的id
+            var data = "id="+id;
+            //提交要删除分类信息的id，并返回操作信息
+            $.post(url,data,function(response){
+                console.log(response);
+                //弹出返回的提示信息
+                alert(response.message);
+                //操作完成后初始化数据
+                initData();
+            });
+
+        }else
+        //否则如果点击修改按钮，将当前行数据写入修改模态框的文本框里
+        if(this.className == 'btn_upd'){
+          //获取当前行的全部数据
+            //获取到id
+            var id = $(this).parents('tr').find('input').attr('value');
+            //获取到省
+            var province = $(this).parents('tr').children('td:nth-child(2)').text();
+            //获取到市
+            var city = $(this).parents('tr').children('td:nth-child(3)').text();
+            //获取到区
+            var area = $(this).parents('tr').children('td:nth-child(4)').text();
+            //获取到详细
+            var address = $(this).parents('tr').children('td:nth-child(5)').text();
+            //获取到电话
+            var telephone = $(this).parents('tr').children('td:nth-child(6)').text();
+            //获取到顾客
+            var customer = $(this).parents('tr').children('td:nth-child(7)').text();
+
+          //将获取到的数据写入修改模态框的文本框里
+            //id
+            $('input#id').val(id);
+            //省
+            $('select#inp-province option:checked').val(province);
+            //市
+            $('select#inp-city option:checked').val(city);
+            //区
+            $('select#inp-area option:checked').val(area);
+            //详细
+            $('input#inp-address').val(address);
+            //电话
+            $('input#inp-telephone').val(telephone);
+            //顾客
+            $('input#inp-customer').val(customer);
+
+        }
+    }
+    //页面结构加载完后加载
+    $(function(){
+        //初始化数据
+        initData();
+        //添加分类信息
+        //为模态框里的确认绑定提交添加/修改信息事件
+        $('#j-add-btn').on('click','button:last-child',saddupd);
+        //为删除/修改按钮绑定事件
+        $('#j-address-tab > tbody').on('click','a',sdelupd);
+
+    });
+</script>
+
+<div class="sort-m">
+	<form action="javascript:void(0)">
+		<!-- 搜索 -->
+        <div class="btn s-search">
+            <i class="fa fa-search"></i>
+            <!-- 搜索框 -->
+            <input class="" type="search" placeholder="Search" aria-label="Search">
+            <!-- 搜索按钮 -->
+            <button type="button" class="btn btn-primary">搜索</button>
+        </div>
+        <!-- 添加按钮 -->
+        <button type="button" class="btn btn-primary offset-4" data-toggle="modal" data-target="#exampleModal" id="j-add-btn1">添加</button>
+        <!-- 批量添加按钮 -->
+        <button type="button" class="btn btn-primary mx-5">批量添加</button>
+        <!-- 批量删除按钮 -->
+        <button type="button" class="btn btn-primary my-3">批量删除</button>
+        <!-- 添加/修改按钮绑定的模态框 -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        	<!-- 模态框中框 -->
+            <div class="modal-dialog" role="document">
+            	<!-- 模态框小框 -->
+                <div class="modal-content">
+                    <!-- 添加/修改按钮模态框头部 -->
+                    <div class="modal-header">
+                    	<!-- 模态框标题 -->
+                        <h5 class="modal-title" id="exampleModalLabel">添加/修改</h5>
+                        <!-- 模态框关闭按钮 -->
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <!-- 模态框内容-表单内容 -->
+                    <div class="modal-body">
+                        <form action="">
+                        	<!-- id -->
+                            <input type="hidden" id="id" />
+                            <div class="form-row">
+                            	<!-- 顾客idcustomer -->
+                                <div class="form-group col-md-5">
+                                    <label for="inputEmail4">顾客id</label>
+                                    <input type="text" class="form-control" id="inp-customer" placeholder="顾客id">
+                                </div>
+                                <!-- 顾客电话telephone -->
+                                <div class="form-group col-md-5">
+                                    <label for="inputPassword4">电话</label>
+                                    <input type="text" class="form-control" id="inp-telephone" placeholder="顾客电话">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <!-- 省份province -->
+                                <div class="form-group col-md-3">
+                                    <label for="inputState">省份</label>
+                                    <select required="required" id="inp-province" class="form-control">
+                                        <option>江苏</option>
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                    </select>
+                                </div>
+                                <!-- 城市city -->
+                                <div class="form-group col-md-3">
+                                    <label for="inputState">城市</label>
+                                    <select required="required" id="inp-city" class="form-control">
+                                        <option>苏州</option>
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                    </select>
+                                </div>
+                                <!-- 区area -->
+                                <div class="form-group col-md-3">
+                                    <label for="inputState">区</label>
+                                    <select required="required" id="inp-area" class="form-control">
+                                        <option>某某</option>
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <!-- 详细地址address -->
+                                <div class="form-group col-md-9">
+                                    <label for="inputEmail4">详细地址</label>
+                                    <input type="text" class="form-control" id="inp-address" placeholder="详细地址">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- 模态框底部-取消按钮、添加按钮 -->
+                    <div class="modal-footer" id="j-add-btn">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- 信息显示表 -->
+	<table class="table" id="j-address-tab">
+        <thead class="thead-light">
+            <tr>
+                <!-- id -->
+                <th scope="col">选择</th>
+                <!-- province -->
+                <th scope="col">省</th>
+                <!-- city -->
+                <th scope="col">市</th>
+                <!-- area -->
+                <th scope="col">区</th>
+                <!-- address -->
+                <th scope="col">详细地址</th>
+                <!-- telephone -->
+                <th scope="col">电话</th>
+                <!-- customer -->
+                <th scope="col">顾客id</th>
+                <!-- / -->
+                <th scope="col">操作</th>
+            </tr>
+        </thead>
+        <!-- 分类信息表体 -->
+        <tbody>
+        </tbody>
+    </table>
+	<!-- 下一页产品信息 -->
+	<nav aria-label="...">
+        <ul class="pagination">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
