@@ -5,7 +5,7 @@
     //定义初始化数据方法
     function initData(){
         //包装查找全部分类信息的地址
-        var url = baseUrl+"/category/findAllCategory";
+        var url = baseUrl+"/category/findAll";
         //获取分类信息数据
         $.get(url,function(response){
             console.log(response);
@@ -56,16 +56,14 @@
         var inpparentId = $('input#inp-parentId').val();
         console.log(inpname,inpnum,inpparentId);
         //地址
-        var url;
+        var url = baseUrl+"/category/saveOrUpdate";
         //数据
         var data;
         //判定添加还是修改
         if(id){
             data = "id="+id+"&name="+inpname+"&num="+inpnum+"&parentId="+inpparentId;
-            url = baseUrl+"/category/updateCategory";
         }else{
             data = "name="+inpname+"&num="+inpnum+"&parentId="+inpparentId;
-            url = baseUrl+"/category/insertCategory";
         }
 
         //提交添加或修改的分类信息
@@ -93,12 +91,12 @@
             //找到当前行的id
             var id = $(this).parents('tr').find('input').attr('value');
             //取得删除地址接口
-            var url = baseUrl+"/category/deleteByCategoryId";
+            var url = baseUrl+"/category/deleteById";
             //打包找到的id
             var data = "id="+id;
             //console.log(data);
             //提交要删除分类信息的id，并返回操作信息
-            $.post(url,data,function(response){
+            $.get(url,data,function(response){
                 console.log(response);
                 //弹出返回的提示信息
                 alert(response.message);
@@ -131,6 +129,55 @@
 
         }
     }
+
+    //选中多行
+    var clickTime = 0;
+    $('#allChoice').click(function(){
+        clickTime++;
+        var tof;
+        if(clickTime % 2 == 1){
+            tof = true;
+        }else{
+            tof = false;
+        }
+        //复选框全选或全取消
+        $('#j-sort-tab').find('input').prop('checked',tof);
+    });
+
+    //删除选中的多行方法
+    var pmoreDel = function(){
+        //定义一个字符串对象
+        var data='';
+        //定义批量删除地址接口
+        var url = baseUrl+"/category/batchDelete";
+        //判断选中的行的id,并放入数组
+        var ids = $('input[type=checkbox]:checked').map(function(index,item){
+            return $(item).attr('value');
+        }).toArray();
+        //将存放id的数组遍历成字符串放入数据
+        for(var i=0;i<=ids.length-1;i++){
+            if(i != 0){
+                data += '&ids='+ids[i];
+            }else{
+                data += 'ids='+ids[i];
+            }
+        }
+        console.log(data);
+        //判断数据是否为空
+        if(data == 0){
+            alert('还没有选中任何信息');
+        }else{
+            //提交要删除的数据
+            $.post(url,data,function(response){
+                console.log(response);
+                alert(response.message);
+                //操作完成刷新数据
+                initData();
+            });
+        }
+        
+    }
+
     //页面结构加载完后加载
     $(function(){
         //初始化数据
@@ -140,6 +187,8 @@
         $('#j-add-btn').on('click','button:last-child',saddupd);
         //为删除/修改按钮绑定事件
         $('#j-sort-tab > tbody').on('click','a',sdelupd);
+        //批量删除
+        $('#moreDel').click(pmoreDel);
 
     });
 </script>
@@ -154,11 +203,11 @@
             <button type="button" class="btn btn-primary">搜索</button>
         </div>
         <!-- 添加按钮 -->
-        <button type="button" class="btn btn-primary offset-4" data-toggle="modal" data-target="#exampleModal" id="j-add-btn1">添加</button>
-        <!-- 批量添加按钮 -->
-        <button type="button" class="btn btn-primary mx-5">批量添加</button>
+        <button type="button" class="btn btn-primary offset-6" data-toggle="modal" data-target="#exampleModal" id="j-add-btn1">添加</button>
+        <!-- 全选按钮 -->
+        <button type="button" class="btn btn-primary mx-3" id="allChoice">全选</button>
         <!-- 批量删除按钮 -->
-        <button type="button" class="btn btn-primary my-3">批量删除</button>
+        <button type="button" class="btn btn-primary my-3" id="moreDel">删除</button>
         <!-- 添加/修改按钮绑定的模态框 -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <!-- 模态框中框 -->
@@ -209,36 +258,39 @@
             </div>
         </div>
     </form>
-    <!-- 分类信息显示表 -->
-    <table class="table" id="j-sort-tab">
-        <!-- 分类信息表头 -->
-        <thead class="thead-light">
-            <tr>
-                <th scope="col">选择</th>
-                <th scope="col">名字</th>
-                <th scope="col">编号</th>
-                <th scope="col">类别</th>
-                <th scope="col">操作</th>
-            </tr>
-        </thead>
-        <!-- 分类信息表体 -->
-        <tbody>
-        </tbody>
-    </table>
-    <!-- 下一页产品信息 -->
-    <nav aria-label="...">
-        <ul class="pagination">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item active" aria-current="page">
-                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-            </li>
-        </ul>
-    </nav>
+    <!-- 表格及导航栏 -->
+    <div class="s-tabnav">
+        <!-- 分类信息显示表 -->
+        <table class="table" id="j-sort-tab">
+            <!-- 分类信息表头 -->
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">选择</th>
+                    <th scope="col">名字</th>
+                    <th scope="col">编号</th>
+                    <th scope="col">类别</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <!-- 分类信息表体 -->
+            <tbody>
+            </tbody>
+        </table>
+        <!-- 下一页产品信息 -->
+        <nav aria-label="...">
+            <ul class="pagination">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>

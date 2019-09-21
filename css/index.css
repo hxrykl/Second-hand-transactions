@@ -6,7 +6,8 @@
 }
 
 .s-left {
-    background-color: #747cf3;/*主调色*/
+    /*background-color: #8f75da;主调色*/
+    background: linear-gradient(135deg,#8f75da 0,#727cf5 60%);
 }
 
 .s-logo {
@@ -38,12 +39,20 @@ div.j-selection{
 }
 .s-head > span{
     line-height: 3.5em;
+    font-size: 18px;
+    font-weight: 600;
+    color: #6c757d;
 }
 .s-content{
-    background-color: #f8f9fc;
+    background-color: #eaecee91;
     margin: 0 -15px;
     height: 90%;
     padding: 10px 30px 0 ;
+}
+.s-content .s-tabnav{
+    padding: 5px 20px;
+    background-color: #fff;
+    border-radius: 5px;
 }
 .s-content button{
     background-color:#747cf3;
@@ -63,6 +72,12 @@ input::-webkit-input-placeholder {
 .s-content .s-search button{
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+}
+
+.s-content .table,
+.s-content .table .thead-light th{
+    color: #6c757d;
+    background-color: #fff;
 }
 .custom-file-input:disabled ~ .custom-file-label {
   background-color: #fff !important;

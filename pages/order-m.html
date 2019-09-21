@@ -6,7 +6,7 @@
         //清空原有的数据
         $('#j-order-tab > tbody').empty();
         //地址
-        var allUrl = baseUrl+"/order/findAllOrder";
+        var allUrl = baseUrl+"/order/findAll";
         //获取全部数据
         $.get(allUrl,function(response){
             
@@ -58,11 +58,11 @@
         if(oId){
             oData = "id="+oId+"&total="+oNum+"&waiterId="+oProduct+"&orderTime="+oTime+"&customerId="+oCustomer+"&addressId="+oAddress;
             //更新数据地址
-            oUrl = baseUrl+"/order/updateOrderPrimaryKey";
+            oUrl = baseUrl+"/order/save";
         }else{
              oData = "total="+oNum+"&waiterId="+oProduct+"&orderTime="+oTime+"&customerId="+oCustomer+"&addressId="+oAddress;
              //添加数据地址
-             oUrl = baseUrl+"/order/insertOrder";
+             oUrl = baseUrl+"/order/save";
         }
         console.log(oData,'/',oUrl);
         //提交添加或修改信息
@@ -92,9 +92,9 @@
             //打包数据
             var oData = "id="+oId;
             //定义删除接口地址
-            var oUrl = baseUrl+"/order/deleteOrderById";
+            var oUrl = baseUrl+"/order/deleteById";
             //提交删除信息
-            $.post(oUrl,oData,function(response){
+            $.get(oUrl,oData,function(response){
                 console.log(response);
                 //弹出删除操作反馈
                 alert(response.message);

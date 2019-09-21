@@ -6,7 +6,7 @@
         //清理表格原先的数据
         $('#j-oEvaluata-tab > tbody').empty();
         //定义地址
-        var oeUrl = baseUrl2+"/comment/findAll";
+        var oeUrl = baseUrl+"/comment/findAll";
         //获取全部评价信息
         $.get(oeUrl,function(response){
             //遍历获取到的数据
@@ -45,7 +45,7 @@
         //声明地址/数据
         var oeUrl,oeDate;
         //打包添加或修改接口地址
-        oeUrl = baseUrl2+"/comment/saveOrUpdate";
+        oeUrl = baseUrl+"/comment/saveOrUpdate";
         //判定添加还是修改打包数据
         if(oeId){
             oeDate = "id="+oeId+"&content="+oeContent+"&commentTime="+oeTime+"&ordertId="+oeOrder;
@@ -76,12 +76,12 @@
             var oeId = $(this).parents('tr').find('input').attr('value');
             //定义删除接口地址
 
-            var oeUrl = baseUrl2+"/comment/deleteById";
+            var oeUrl = baseUrl+"/comment/deleteById";
             //打包id数据
             var oeDate = "id="+oeId;
              console.log('id',oeDate);
             //提交信息，删除数据
-            $.post(oeUrl,oeDate,function(response){
+            $.get(oeUrl,oeDate,function(response){
                 //回馈删除操作信息
                 alert(response.message);
                 //操作完成刷新数据
@@ -124,6 +124,54 @@
             $('input#inp-order').val('');
     });
 
+    //选中多行
+    var clickTime = 0;
+    $('#allChoice').click(function(){
+        clickTime++;
+        var tof;
+        if(clickTime % 2 == 1){
+            tof = true;
+        }else{
+            tof = false;
+        }
+        //复选框全选或全取消
+        $('#j-oEvaluata-tab').find('input').prop('checked',tof);
+    });
+
+    //删除选中的多行方法
+    var pmoreDel = function(){
+        //定义一个字符串对象
+        var data='';
+        //定义批量删除地址接口
+        var url = baseUrl+"/comment/batchDelete";
+        //判断选中的行的id,并放入数组
+        var ids = $('input[type=checkbox]:checked').map(function(index,item){
+            return $(item).attr('value');
+        }).toArray();
+        //将存放id的数组遍历成字符串放入数据
+        for(var i=0;i<=ids.length-1;i++){
+            if(i != 0){
+                data += '&ids='+ids[i];
+            }else{
+                data += 'ids='+ids[i];
+            }
+        }
+        console.log(data);
+        //判断数据是否为空
+        if(data == 0){
+            alert('还没有选中任何信息');
+        }else{
+            //提交要删除的数据
+            $.post(url,data,function(response){
+                console.log(response);
+                alert(response.message);
+                //操作完成刷新数据
+                refreshData();
+            });
+        }
+        
+    }
+
     //页面结构加载完后自行加载
     $(function(){
         //初始化数据
@@ -132,6 +180,8 @@
         $('div#j-add-btn').on('click','button:last-child',oeAddUpd);
         //为每一行的删除或修改按钮=绑定事件
         $('#j-oEvaluata-tab > tbody').on('click','a',oeDelUpd);
+        //批量删除
+        $('#moreDel').click(pmoreDel);
     });
 </script>
 
@@ -146,11 +196,11 @@
             <button type="button" class="btn btn-primary">搜索</button>
         </div>
         <!-- 添加按钮 -->
-        <button type="button" class="btn btn-primary offset-4" data-toggle="modal" data-target="#exampleModal" id="j-add-btn1">添加</button>
-        <!-- 批量添加按钮 -->
-        <button type="button" class="btn btn-primary mx-5">批量添加</button>
+        <button type="button" class="btn btn-primary offset-6" data-toggle="modal" data-target="#exampleModal" id="j-add-btn1">添加</button>
+        <!-- 全选按钮 -->
+        <button type="button" class="btn btn-primary mx-3" id="allChoice">全选</button>
         <!-- 批量删除按钮 -->
-        <button type="button" class="btn btn-primary my-3">批量删除</button>
+        <button type="button" class="btn btn-primary my-3" id="moreDel">删除</button>
         <!-- 添加/修改按钮绑定的模态框 -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         	<!-- 模态框中框 -->
