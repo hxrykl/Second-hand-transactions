@@ -7,7 +7,31 @@
         //查找全部产品的地址
         var url = "/product/findAll";
         //获取数据
-        $.get(baseUrl+url,function(response){
+        // $.get(baseUrl+url,function(response){
+        //     console.log(response);
+        //     //清空子元素
+        //     $("#j-product-tab > tbody").empty();
+        //     //遍历获取到的数据
+        //     response.data.forEach(function(item,index){
+        //         //定义每一列数据
+        //         var newTr = $(`<tr>
+        //         <td><input  type="checkbox" value="`+item.id+`" num="`+index+`"></td>
+        //         <td class="namea">`+item.name+`</td>
+        //         <td>`+item.description+`</td>
+        //         <td>`+item.price+`</td>
+        //         <td>`+item.status+`</td>
+        //         <td>`+item.photo+`</td>
+        //         <td>`+item.categoryId+`</td>
+        //         <td>
+        //             <a class="btn_del" href="javascript:void(0)">删除</a>
+        //             <a class="btn_upd" href="javascript:void(0)"data-toggle="modal" data-target="#exampleModal">修改</a>
+        //         </td>
+        //     </tr>`);
+        //         //添加数据进表格里
+        //         $("#j-product-tab > tbody").append(newTr);
+        //     });
+        // });
+        $.ajax(baseUrl+url,{method:'get',async:false,success:function(response){
             console.log(response);
             //清空子元素
             $("#j-product-tab > tbody").empty();
@@ -30,7 +54,8 @@
                 //添加数据进表格里
                 $("#j-product-tab > tbody").append(newTr);
             });
-        });
+        }});
+
     }
   //重置添加模态框内容
     $("button#j-add-btn1").click(function() {
@@ -193,6 +218,31 @@
         }
         
     }
+    //搜索筛选
+    var screening = function(){
+        //刷新数据
+        initData();
+        //获取搜索框里的数据
+        var searchInput = $('.s-search  input[type=search]').val();
+        //定义正则表达式
+        var pat = new RegExp(searchInput,'igm');
+        //正则表达式匹配的范围
+        var allTbody = $('#j-product-tab > tbody > tr');
+        //清空tbody里的tr元素
+        $("#j-product-tab > tbody").empty();
+        //遍历匹配范围
+        $(allTbody).map(function(index,item){
+            //获取每一个tr元素里的文本
+            var trText = $(item).text();
+            //与正则表达式匹配结果
+            var resultTr = pat.exec(trText);
+            //判断是否匹配到结果
+            if(resultTr){
+                //添加符合匹配的tr元素
+                $('#j-product-tab > tbody').append(item);
+            }
+        });
+    }
   //页面结构加载完后加载
     $(function(){
         //初始化加载
@@ -204,6 +254,8 @@
         //添加产品
         //为模态框里的确认按钮绑定提交信息事件
         $('#j-add-btn').on("click","button:last-child",addUpd);//函数加括号会自行运行
+        //给搜索输入框绑定键盘抬起事件
+        $('.s-search  input[type=search]').keyup(screening);
         
     });
 
